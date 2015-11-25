@@ -1,15 +1,20 @@
+//Numerical Method for Solving Laplace's Equation
+//Initial Version: 	11/25/2015
+//Update:		N/A
+//Author:		Josh LaBounty (joshua.labounty@stonybrook.edu)
+
 int
 numerical_laplace()
 {
 
-	const int x_max = 49, y_max = 39;
-	double v_top = 0.0, v_bottom = 0.0, v_left = 9.8, v_right = 0.0;
-	int iterations = 1000;
-	bool write_matrix_init = true;
-	bool additional_constraints = true;
-	bool write_matrix_final = false;
-	bool output = true;
-	bool plot = true;
+	const int x_max = 49, y_max = 39;					//set the dimensions of the area within your boundary conditions
+	double v_top = 0.0, v_bottom = 0.0, v_left = 9.8, v_right = 0.0;	//set the boundary conditions. additional points can be specified below, but this is useful if one row should be set to ground
+	int iterations = 1000;							//iterations of the calculation. Can take a while past 100,000
+	bool write_matrix_init = true;						//Will output the initial matrix to stdout if true
+	bool additional_constraints = true;					//Will apply the additional constraints below if true
+	bool write_matrix_final = false;					//Will output the final matrix after iterating if true
+	bool output = true;							//Will generate output file if true.
+	bool plot = true;							//Will plot output if true
 
 	//Create array filled with 0's in the size of the grid + 2 (add boundary conitions)
 	double laplace[x_max+2][y_max+2];
@@ -25,6 +30,8 @@ numerical_laplace()
 		}
 	}
 	cout << "Matrix Created." << endl;
+
+	//These additional constraints are appplied to the matrix before iteration. EX) Only this point on the boundary is at 5V
 	if(additional_constraints)
 	{
 		laplace[1][0] = v_left / 2;
@@ -37,6 +44,7 @@ numerical_laplace()
 		cout << "    (additional Constraints applied)" << endl;
 	}
 
+	//Write out the initial matrix
 	if(write_matrix_init == true)
 	{
 		for(int i = 0; i < x_max+2; i++)
@@ -51,22 +59,23 @@ numerical_laplace()
 		cout << endl << endl;
 	}
 	
+
+	//Iterate over the inner rows/columns of the matrix, averaging at each point.
 	for ( int k = 0; k < iterations; k++)
 	{
 		//Loop over all iterations, averaging each point with those around them... skipping over boundary conditions
-//		cout << "Iteration: " << k << endl;
 		for(int i = 1; i < x_max+1; i++)
 		{
 			for(int j = 1; j < y_max+1; j++)
 			{
-//				laplace[i][j] = 0.25*( laplace[i-1][j] + laplace[i+1][j] + laplace[i][j-1] + laplace[i][j+1] );
-				laplace[i][j] = 0.125*( laplace[i-1][j] + laplace[i+1][j] + laplace[i][j-1] + laplace[i][j+1] + laplace[i-1][j-1] + laplace[i-1][j+1] + laplace[i+1][j-1] + laplace [i+1][j+1] );
+				laplace[i][j] = 0.25*( laplace[i-1][j] + laplace[i+1][j] + laplace[i][j-1] + laplace[i][j+1] );
+//				laplace[i][j] = 0.125*( laplace[i-1][j] + laplace[i+1][j] + laplace[i][j-1] + laplace[i][j+1] + laplace[i-1][j-1] + laplace[i-1][j+1] + laplace[i+1][j-1] + laplace [i+1][j+1] );
 			}
 		}
 	}
-
 	cout << "Computations Completed. Plotting..." << endl;
 
+	//Write out the final matrix
 	if(write_matrix_final == true)
 	{
 		for(int i = 0; i < x_max+2; i++)
@@ -100,6 +109,7 @@ numerical_laplace()
 	}
 
 
+	//Plot the final output
 	if(plot)
 	{
 		//Create the output graph
